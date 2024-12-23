@@ -73,9 +73,10 @@ def part2():
                 steps = 0
                 recent = False
                 while True:
-                    if steps > 17000:
+                    if (i,j,dir) in visited:
                         poss += 1
                         break
+                    visited.add((i,j,dir))
                     if dir == UP:
                         if i == 0: break
                         elif map[i-1][j] == "#":
