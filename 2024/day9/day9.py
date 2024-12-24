@@ -64,107 +64,62 @@ def part2():
     for i, space in enumerate(line):
         # file
         if i % 2 == 0:
-            disk += [Unit(i//2,FILE) for p in range(space)]
+            disk += [int(i//2) for p in range(space)]
             file_indices.append(index)
         # buffer
         else:
-            disk += [Unit(-1,FREE) for p in range(space)]
+            disk += [-1 for p in range(space)]
             free_indices.append(index)
         index += space
 
+    file_ptr = len(disk) - 1
+    start_cache = {}
 
-    free_index = 0
-    file_index = len(disk) - 1
+    while file_ptr > 0:
+        current_id = disk[file_ptr]
 
-    def disk_string():
-        r = ""
-        for p in disk:
-            if p.id == -1:
-                r += "_"
-            else:
-                r += str(p.id % 10)
-        return r
-    
-    search_starts = {}
+        # skip over free space
+        if current_id == -1:
+            file_ptr -= 1
+            continue
 
-    def find_space(space,file_index):
-        if space in search_starts:
-            i = search_starts[space]
+        # count how much needs to be moved
+        diff = 0
+        while (disk[file_ptr-diff] == current_id):
+            diff += 1
+        # diff gotten
+
+        # figure out where I can find the space
+        if diff in start_cache:
+            free_ptr = start_cache[diff]
         else:
-            i = 0
-        current_run = 0
-        while i <= file_index - space:
-            if current_run == space:
-                search_starts[space] = i
-                return i - current_run
-            if disk[i].type == FREE:
-                current_run += 1
-            else:
-                current_run = 0
-            i += 1
-        return -1
-    
-    # grabs length of next file block
-    def get_length(index):
-        length = 0
-        if disk[index].type == FREE:
-            return length
-        id = disk[index].id
-        while index < len(disk) and id == disk[index].id:
-            index += 1
-            length += 1
-        return length
+            free_ptr = 0
+        target = [-1] * diff
+        while (free_ptr < file_ptr):
+            if disk[free_ptr:free_ptr+diff] == target:
+                start_cache[diff] = free_ptr
+                break
+            free_ptr += 1
 
-    file_key = len(file_indices) - 1
-    file_index = file_indices[file_key]
-    file_cap = get_length(file_index)
-    free_index = find_space(file_cap,file_index)
+        # don't do the swap if no space found
+        if free_ptr >= file_ptr:
+            file_ptr -= diff
+            continue
 
-    if debug: print(disk_string())
-    # print()
+        # perform the swap
+        for i in range(diff):
+            disk[free_ptr+i] = current_id
+            disk[file_ptr-i] = -1
 
-    def verify_index(id):
-        return disk[file_indices[id]].id == id
-    
-    while file_key != 0:
-        if free_index != -1:
-            for i in range(file_cap):
-                # swap out all of them
-                temp = disk[free_index+i]
-                assert(temp.id == -1)
-                assert(temp.type == FREE)
-                disk[free_index+i] = disk[file_index+i]
-                disk[file_index+i] = temp
-                assert(disk[free_index+i].id != -1)
-        file_key -= 1
-        file_index = file_indices[file_key]
-        if verify_index(file_key):
-            file_cap = get_length(file_index)
-        else:
-            print("YOO")
-            file_cap = 0
-        free_index = find_space(file_cap,file_index)
-            
+        file_ptr -= diff
+
     sum = 0
-    i = 0
-    for unit in disk:
-        if unit.id != -1:
-            # print(i, unit.id)
-            sum += i * unit.id
-        i += 1
-
-    # for unit in disk:
-    #     if unit.id == -1:
-    #         print("_",end="")
-    #     else:
-    #         print(str(unit.id % 10),end="")
+    for i, id in enumerate(disk):
+        if id != -1:
+            sum += id * i
     
-    # print()
-    if debug: print(disk_string())
     print(sum)
 
 debug = False
 part1()
 part2()
-
-# 10172096513548
