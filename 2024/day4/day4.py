@@ -4,7 +4,7 @@ def MAS(M,A,S):
 
 def part1():
     with open("input.in") as file:
-        ws = file.read().split("\n")[:-1]
+        ws = file.read().split("\n")
     
     sum = 0
     for i in range(len(ws)):
@@ -56,7 +56,7 @@ def MS(pair1,pair2):
 
 def part2():
     with open("input.in") as file:
-        ws = file.read().split("\n")[:-1]
+        ws = file.read().split("\n")
     
     sum = 0
     for i in range(1,len(ws)-1):

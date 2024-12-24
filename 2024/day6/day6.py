@@ -2,7 +2,7 @@ def part1():
     # parsing
     with open("input.in") as f:
         lines = f.read().split("\n")
-    map = [list(line) for line in lines][:-1]
+    map = [list(line) for line in lines]
     
     # find start
     i,j = (0,0)
@@ -49,7 +49,7 @@ def part2():
     # parsing
     with open("input.in") as f:
         lines = f.read().split("\n")
-    map = [list(line) for line in lines][:-1]
+    map = [list(line) for line in lines]
     
     # find start
     for a in range(len(map)):
